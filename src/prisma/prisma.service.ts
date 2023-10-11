@@ -75,4 +75,14 @@ export class PrismaService extends PrismaClient {
       throw e
     }
   }
+
+  async findItem(id: number) {
+    const items = await this.bidItem.findFirst({
+      where: {
+        id
+      },
+    })
+
+    return items;
+  }
 }

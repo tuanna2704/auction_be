@@ -33,4 +33,12 @@ export class BiddingController {
   ) {
     return this.biddingsService.findItems({state, startTime, endTime});
   }
+
+  @Get('item/:id')
+  @UseGuards(AuthGuard)
+  findItem(
+    @Param('id') id: number
+  ) {
+    return this.biddingsService.findItem(id);
+  }
 }

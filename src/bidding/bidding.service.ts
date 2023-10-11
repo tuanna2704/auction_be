@@ -19,4 +19,8 @@ export class BiddingService {
   publishItem({id, userId}) {
     return this.prisma.publishItem({id, userId});
   }
+
+  findItem(id: number) {
+    return this.prisma.findItem(Number(id));
+  }
 }
