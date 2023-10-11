@@ -1,6 +1,6 @@
 export interface SignInSuccess {
   success: boolean;
-  token: string;
+  access_token: string;
 }
 
 export interface SignInFailed {

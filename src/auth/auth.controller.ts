@@ -9,17 +9,17 @@ export class AuthController {
   ) {}
 
   @Post('signup')
-  signUp(@Body('user') user: Pick<User, "password" | "email">) {
+  signUp(@Body('user') user: Pick<User, "password" | "email" | "name">) {
     return this.authService.signUp(user);
   }
 
   @Post('signin')
-  signIn(@Body('user') user: Pick<User, "password" | "email">) {
+  signIn(@Body('user') user: Pick<User, "password" | "email" | "name">) {
     return this.authService.signIn(user);
   }
 
   @Delete('signout')
   signOut(): string {
-    return 'this.authService.signOut(user)';
+    return 'Not Implemented Yet';
   }
 }

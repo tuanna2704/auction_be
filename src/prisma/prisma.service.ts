@@ -4,7 +4,7 @@ import { User } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient {
-  async createUser(data: Pick<User, "password" | "email">) {
+  async createUser(data: Pick<User, "password" | "email" | "name">) {
     try {
       const response = await this.user.create({data});
       return {success: true, data: response};
@@ -19,13 +19,10 @@ export class PrismaService extends PrismaClient {
     }
   }
 
-  async validateUser(where: Pick<User, "password" | "email">): Promise<boolean> {
+  async findUser(where: Pick<User, "password" | "email">): Promise<Pick<User, "password">> {
     const user = await this.user.findFirst({where});
+    delete user.password;
 
-    if (user) {
-      return true;
-    }
-
-    return false;
+    return user;
   }
 }
