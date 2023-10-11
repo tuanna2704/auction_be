@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, Prisma, BidItemState, User } from '@prisma/client';
+import { PrismaClient, Prisma, BidItemState, User, DepositEventType } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient {
@@ -84,5 +84,34 @@ export class PrismaService extends PrismaClient {
     })
 
     return items;
+  }
+
+  async recharge(id: number, amount: number) {
+    try {
+      const response = await this.$transaction([
+        this.user.update({
+          where: { id },
+          data: {
+            deposit: {
+              increment: amount
+            },
+            depositLogs: {
+    
+            }
+          }
+        }),
+        this.depositLog.create({
+          data: {
+            amount, 
+            userId: id,
+            eventType: DepositEventType.RECHAGE
+          }
+        })
+      ])
+
+      return {success: true, data: {user: response[0], depositLog: response[1]}};
+    } catch (e) {
+      throw e
+    }
   }
 }

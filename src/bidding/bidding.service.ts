@@ -23,4 +23,8 @@ export class BiddingService {
   findItem(id: number) {
     return this.prisma.findItem(Number(id));
   }
+
+  recharge({amount, userId}) {
+    return this.prisma.recharge(userId, amount);
+  }
 }

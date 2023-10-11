@@ -41,4 +41,10 @@ export class BiddingController {
   ) {
     return this.biddingsService.findItem(id);
   }
+
+  @UseGuards(AuthGuard)
+  @Post('/recharge')
+  recharge(@Body('amount') amount: number, @Req() request: Request) {
+    return this.biddingsService.recharge({amount, userId: (request['user'] as User).id})
+  }
 }
