@@ -15,4 +15,8 @@ export class BiddingService {
   findItems({state, startTime, endTime}) {
     return this.prisma.findItems({state, startTime, endTime});
   }
+
+  publishItem({id, userId}) {
+    return this.prisma.publishItem({id, userId});
+  }
 }

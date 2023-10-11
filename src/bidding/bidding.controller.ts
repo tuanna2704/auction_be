@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Req, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Get, Query, Put, Param } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Request } from 'express';
 import { BiddingService } from './bidding.service';
@@ -16,6 +16,12 @@ export class BiddingController {
     return this.biddingsService.createItem(
       {...item, ...{userId: (request['user'] as User).id}
     });
+  }
+
+  @UseGuards(AuthGuard)
+  @Put('item/:id/publish')
+  publishItem(@Param('id') id: number, @Req() request: Request) {
+    return this.biddingsService.publishItem({id, userId: (request['user'] as User).id})
   }
   
   @Get('item')

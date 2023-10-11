@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, Prisma } from '@prisma/client';
-import { User } from '@prisma/client';
+import { PrismaClient, Prisma, BidItemState, User } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient {
@@ -55,5 +54,25 @@ export class PrismaService extends PrismaClient {
     })
 
     return items;
+  }
+
+  async publishItem({ id, userId }) {
+    try {
+      const response = await this.bidItem.update({
+        where: { id: Number(id), userId },
+        data: {
+          state: BidItemState.PUBLISHED,
+        }
+      })
+      return {success: true, data: response};
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === 'P2025') {
+          return {success: false, message: e.meta.cause};
+        }
+      }
+      throw e
+    }
   }
 }
