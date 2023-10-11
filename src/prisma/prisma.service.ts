@@ -19,10 +19,25 @@ export class PrismaService extends PrismaClient {
     }
   }
 
-  async findUser(where: Pick<User, "password" | "email">): Promise<Pick<User, "password">> {
+  async findUser(where: Prisma.UserWhereInput): Promise<Pick<User, "password">> {
     const user = await this.user.findFirst({where});
     delete user.password;
 
     return user;
+  }
+
+  async createBidItem(data: Prisma.BidItemCreateInput) {
+    try {
+      const response = await this.bidItem.create({data});
+      return {success: true, data: response};
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === 'P2002') {
+          return {success: false, message: e.message};
+        }
+      }
+      throw e
+    }
   }
 }
