@@ -40,4 +40,20 @@ export class PrismaService extends PrismaClient {
       throw e
     }
   }
+
+  async findItems({ state, startTime, endTime }) {
+    const items = await this.bidItem.findMany({
+      where: {
+        state,
+        startTime: {
+          gte: startTime ? new Date(startTime) : undefined,
+        },
+        endTime: {
+          lte: endTime ? new Date(endTime) : undefined,
+        }
+      },
+    })
+
+    return items;
+  }
 }

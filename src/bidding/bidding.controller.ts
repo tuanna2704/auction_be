@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Get, Query } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Request } from 'express';
 import { BiddingService } from './bidding.service';
@@ -16,5 +16,15 @@ export class BiddingController {
     return this.biddingsService.createItem(
       {...item, ...{userId: (request['user'] as User).id}
     });
+  }
+  
+  @Get('item')
+  @UseGuards(AuthGuard)
+  listItems(
+    @Query('state') state,
+    @Query('startTime') startTime,
+    @Query('endTime') endTime,
+  ) {
+    return this.biddingsService.findItems({state, startTime, endTime});
   }
 }

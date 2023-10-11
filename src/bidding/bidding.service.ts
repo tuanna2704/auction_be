@@ -11,4 +11,8 @@ export class BiddingService {
   createItem(data: Prisma.BidItemCreateInput) {
     return this.prisma.createBidItem(data);
   }
+
+  findItems({state, startTime, endTime}) {
+    return this.prisma.findItems({state, startTime, endTime});
+  }
 }
