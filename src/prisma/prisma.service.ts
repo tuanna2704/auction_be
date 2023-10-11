@@ -114,4 +114,8 @@ export class PrismaService extends PrismaClient {
       throw e
     }
   }
+
+  async findLogsByUser (id: number) {
+    return this.depositLog.findMany({where: { userId: id}});
+  }
 }

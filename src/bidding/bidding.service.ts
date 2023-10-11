@@ -27,4 +27,8 @@ export class BiddingService {
   recharge({amount, userId}) {
     return this.prisma.recharge(userId, amount);
   }
+
+  findLogs(id: number) {
+    return this.prisma.findLogsByUser(id);
+  }
 }

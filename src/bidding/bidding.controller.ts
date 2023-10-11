@@ -47,4 +47,12 @@ export class BiddingController {
   recharge(@Body('amount') amount: number, @Req() request: Request) {
     return this.biddingsService.recharge({amount, userId: (request['user'] as User).id})
   }
+
+  @Get('user/:id/logs')
+  @UseGuards(AuthGuard)
+  getLogs(
+    @Param('id') id: number
+  ) {
+    return this.biddingsService.findLogs(Number(id));
+  }
 }
