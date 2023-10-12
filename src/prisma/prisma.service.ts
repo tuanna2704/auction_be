@@ -18,11 +18,17 @@ export class PrismaService extends PrismaClient {
     }
   }
 
-  async findUser(where: Prisma.UserWhereInput): Promise<Pick<User, "password">> {
-    const user = await this.user.findFirst({where});
-    delete user.password;
-
-    return user;
+  async findUser(where: Prisma.UserWhereInput): Promise<Omit<User, "password">> {
+    try {
+      const user = await this.user.findFirst({where});
+      if (user) {
+        delete user.password;
+        return user;
+      }
+      return null;
+    } catch (e) {
+      throw e
+    }
   }
 
   async createBidItem(data: Prisma.BidItemCreateInput) {
@@ -53,6 +59,30 @@ export class PrismaService extends PrismaClient {
       },
     })
 
+    return items;
+  }
+
+  async findOngoingItems(endTime) {
+    const items = await this.bidItem.findMany({
+      where: {
+        state: BidItemState.PUBLISHED,
+        endTime: {
+          gte: endTime ? new Date(endTime) : undefined,
+        }
+      },
+    })
+    return items;
+  }
+
+  async findCompletedItems(endTime) {
+    const items = await this.bidItem.findMany({
+      where: {
+        state: BidItemState.PUBLISHED,
+        endTime: {
+          lt: endTime ? new Date(endTime) : undefined,
+        }
+      },
+    })
     return items;
   }
 

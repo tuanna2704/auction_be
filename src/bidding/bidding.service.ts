@@ -16,6 +16,14 @@ export class BiddingService {
     return this.prisma.findItems({state, startTime, endTime});
   }
 
+  findOngoingItems(endTime) {
+    return this.prisma.findOngoingItems(endTime);
+  }
+
+  findCompletedItems(endTime) {
+    return this.prisma.findCompletedItems(endTime);
+  }
+
   publishItem({id, userId}) {
     return this.prisma.publishItem({id, userId});
   }
@@ -32,7 +40,13 @@ export class BiddingService {
     return this.prisma.findLogsByUser(id);
   }
 
-  async bid({amount, user, itemId}: {amount: number, user: User, itemId: number}) {
+  async bid({amount, userId, itemId}: {amount: number, userId: number, itemId: number}) {
+    const user = await this.prisma.findUser({ id: userId });
+
+    if (!user) {
+      return {success: false, message: `User not found`};
+    }
+
     if (amount + user.totalDepositLock > user.deposit) {
       return {success: false, message: `Deposit is not enough! You need at least ${amount}`};
     }
@@ -46,6 +60,6 @@ export class BiddingService {
       return {success: false, message: `Biding ammount must be greater than ${onGoingItem.startPrice}`};
     }
 
-    return "this.prisma.bid({amount, userId: user.id, itemId});"
+    return this.prisma.bid({amount, userId: user.id, itemId});
   }
 }

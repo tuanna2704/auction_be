@@ -24,4 +24,8 @@ export class AuthService {
 
     return { success: false, message: 'Signed Failed' };
   }
+
+  userInfo(id: number) {
+    return this.prisma.findUser({id});
+  }
 }

@@ -34,6 +34,22 @@ export class BiddingController {
     return this.biddingsService.findItems({state, startTime, endTime});
   }
 
+  @Get('item/ongoing')
+  @UseGuards(AuthGuard)
+  listOngoingItems(
+    @Query('endTime') endTime,
+  ) {
+    return this.biddingsService.findOngoingItems(endTime);
+  }
+
+  @Get('item/completed')
+  @UseGuards(AuthGuard)
+  listCompletedItems(
+    @Query('endTime') endTime,
+  ) {
+    return this.biddingsService.findCompletedItems(endTime);
+  }
+
   @Get('item/:id')
   @UseGuards(AuthGuard)
   findItem(
@@ -63,6 +79,6 @@ export class BiddingController {
     @Body('itemId') itemId: number,
     @Req() request: Request
   ) {
-    return this.biddingsService.bid({amount, user: (request['user'] as User), itemId});
+    return this.biddingsService.bid({amount, userId: (request['user'] as User).id, itemId});
   }
 }
