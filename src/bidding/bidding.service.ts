@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 
 @Injectable()
 export class BiddingService {
@@ -30,5 +30,22 @@ export class BiddingService {
 
   findLogs(id: number) {
     return this.prisma.findLogsByUser(id);
+  }
+
+  async bid({amount, user, itemId}: {amount: number, user: User, itemId: number}) {
+    if (amount + user.totalDepositLock > user.deposit) {
+      return {success: false, message: `Deposit is not enough! You need at least ${amount}`};
+    }
+
+    const onGoingItem = await this.prisma.findOngoingItem(itemId);
+    if (!onGoingItem) {
+      return {success: false, message: "Item is not on going!"};
+    } 
+
+    if (amount < onGoingItem.startPrice) {
+      return {success: false, message: `Biding ammount must be greater than ${onGoingItem.startPrice}`};
+    }
+
+    return "this.prisma.bid({amount, userId: user.id, itemId});"
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, Prisma, BidItemState, User, DepositEventType } from '@prisma/client';
+import { PrismaClient, Prisma, BidItemState, User, DepositEventType, DepositLockState } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient {
@@ -115,7 +115,35 @@ export class PrismaService extends PrismaClient {
     }
   }
 
-  async findLogsByUser (id: number) {
+  findLogsByUser (id: number) {
     return this.depositLog.findMany({where: { userId: id}});
+  }
+
+  findOngoingItem(id: number) {
+    return this.bidItem.findFirst({
+      where: {
+        id,
+        state: BidItemState.PUBLISHED,
+        startTime: {
+          lte: new Date,
+        },
+      },
+    })
+  }
+
+  async bid({amount, userId, itemId}) {
+    try {
+      const response = await this.$transaction([
+        this.depositLock.create({data: {userId, itemId, amount, state: DepositLockState.LOCKED}}),
+        this.user.update({
+          where: { id: userId },
+          data: { totalDepositLock: {increment: amount}}
+        })
+      ])
+
+      return {success: true, data: response};
+    } catch (e) {
+      throw e
+    }
   }
 }

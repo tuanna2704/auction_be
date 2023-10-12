@@ -55,4 +55,14 @@ export class BiddingController {
   ) {
     return this.biddingsService.findLogs(Number(id));
   }
+
+  @UseGuards(AuthGuard)
+  @Post('/create')
+  bid(
+    @Body('amount') amount: number,
+    @Body('itemId') itemId: number,
+    @Req() request: Request
+  ) {
+    return this.biddingsService.bid({amount, user: (request['user'] as User), itemId});
+  }
 }
