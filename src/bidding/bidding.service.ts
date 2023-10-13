@@ -52,9 +52,14 @@ export class BiddingService {
     }
 
     const onGoingItem = await this.prisma.findOngoingItem(itemId);
+    const currentPrice = onGoingItem.depositLock[0]?.amount || onGoingItem.startPrice;
     if (!onGoingItem) {
       return {success: false, message: "Item is not on going!"};
-    } 
+    }
+
+    if (amount < currentPrice) {
+      return {success: false, message: `Current price is ${currentPrice}, You have to bid with amount greater than that`};
+    }
 
     if (amount < onGoingItem.startPrice) {
       return {success: false, message: `Biding ammount must be greater than ${onGoingItem.startPrice}`};

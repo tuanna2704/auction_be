@@ -170,6 +170,12 @@ export class PrismaService extends PrismaClient {
           lte: new Date,
         },
       },
+      include: {
+        depositLock: {
+          orderBy: [{amount: 'desc'}],
+          take: 1
+        },
+      }
     })
   }
 
