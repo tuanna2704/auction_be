@@ -70,6 +70,12 @@ export class PrismaService extends PrismaClient {
           gte: endTime ? new Date(endTime) : undefined,
         }
       },
+      include: {
+        depositLock: {
+          orderBy: [{amount: 'desc'}],
+          take: 1
+        },
+      }
     })
     return items;
   }
@@ -82,6 +88,12 @@ export class PrismaService extends PrismaClient {
           lt: endTime ? new Date(endTime) : undefined,
         }
       },
+      include: {
+        depositLock: {
+          orderBy: [{amount: 'desc'}],
+          take: 1
+        },
+      }
     })
     return items;
   }
