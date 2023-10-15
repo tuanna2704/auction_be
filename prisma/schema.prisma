@@ -63,6 +63,7 @@ model BidItem {
 enum BidItemState {
   DRAFT
   PUBLISHED
+  FINISHED
 }
 
 enum DepositEventType {
@@ -72,4 +73,5 @@ enum DepositEventType {
 enum DepositLockState {
   RELEASED
   LOCKED
+  CHARGED
 }

@@ -67,4 +67,8 @@ export class BiddingService {
 
     return this.prisma.bid({amount, userId: user.id, itemId});
   }
+
+  async finishBidding(itemId: number) {
+    return await this.prisma.finishBidding(itemId);
+  }
 }

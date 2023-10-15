@@ -83,10 +83,17 @@ export class PrismaService extends PrismaClient {
   async findCompletedItems(endTime) {
     const items = await this.bidItem.findMany({
       where: {
-        state: BidItemState.PUBLISHED,
-        endTime: {
-          lt: endTime ? new Date(endTime) : undefined,
-        }
+        OR: [
+          {
+            state: BidItemState.PUBLISHED,
+            endTime: {
+              lt: endTime ? new Date(endTime) : undefined,
+            }
+          },
+          {
+            state: BidItemState.FINISHED
+          }
+        ]
       },
       include: {
         depositLock: {
@@ -193,5 +200,52 @@ export class PrismaService extends PrismaClient {
     } catch (e) {
       throw e
     }
+  }
+
+  async finishBidding(id: number) {
+    const championItem = await this.depositLock.findFirst({
+      where: { itemId: id },
+      orderBy: [{amount: 'desc'}, {createdAt: 'asc'}],
+    })
+    await this.bidItem.update({where: { id }, data: { state: BidItemState.FINISHED }});
+    if (!championItem) {
+      return { success: true, message: 'Item Finish bidding without any bid!'};
+    }
+
+    await this.depositLock.update({
+      where: { id: championItem.id },
+      data: { state: DepositLockState.CHARGED}
+    });
+
+    const locks = await this.depositLock.groupBy({
+      by: 'userId',
+      where: { itemId: id, state: DepositLockState.LOCKED},
+      _sum: {
+        amount: true,
+      },
+    })
+
+    const queries = locks.map(lock => {
+      return this.user.update({
+        where: {id: lock.userId},
+        data: { totalDepositLock: { decrement: lock._sum.amount }}
+      })
+    })
+
+    return this.$transaction([
+      ...[
+        this.depositLock.updateMany({
+          where: {itemId: id, state: DepositLockState.LOCKED},  data: { state: DepositLockState.RELEASED} 
+        }),
+        this.user.update({
+          where: { id: championItem.userId},
+          data: { 
+            totalDepositLock: { decrement: championItem.amount },
+            deposit: { decrement: championItem.amount }
+          }
+        })
+      ],
+      ...queries
+    ])
   }
 }

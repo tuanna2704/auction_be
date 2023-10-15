@@ -81,4 +81,12 @@ export class BiddingController {
   ) {
     return this.biddingsService.bid({amount, userId: (request['user'] as User).id, itemId});
   }
+
+  @UseGuards(AuthGuard)
+  @Post('/finish')
+  finishBidding(
+    @Body('itemId') itemId: number,
+  ) {
+    return this.biddingsService.finishBidding(itemId);
+  }
 }
