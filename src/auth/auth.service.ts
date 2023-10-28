@@ -25,6 +25,18 @@ export class AuthService {
     return { success: false, message: 'Signed Failed' };
   }
 
+  async signInWithGoogle(credential: string) {
+    const userInfo = this.jwtService.decode(credential);
+    if (typeof userInfo === 'object') {
+      const user = await this.prisma.findOrCreateUser(userInfo.email, userInfo.name);
+      const token = this.jwtService.sign(user);
+
+      return { success: true, access_token: token};
+    }
+    
+    return { success: false, message: 'Signed Failed' };
+  }
+
   userInfo(id: number) {
     return this.prisma.findUser({id});
   }

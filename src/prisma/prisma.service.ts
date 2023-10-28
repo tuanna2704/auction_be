@@ -248,4 +248,12 @@ export class PrismaService extends PrismaClient {
       ...queries
     ])
   }
+
+  async findOrCreateUser (email: string, name: string) {
+    const user = await this.user.findFirst({where: { email }});
+
+    if (user) return user;
+
+    return this.user.create({ data: { email, name, password: ''} })
+  }
 }

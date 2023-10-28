@@ -15,6 +15,11 @@ export class AuthController {
     return this.authService.signUp(user);
   }
 
+  @Post('google-signin')
+  signInWithGoogle(@Body('credential') credential) {
+    return this.authService.signInWithGoogle(credential);
+  }
+
   @Post('signin')
   signIn(@Body('user') user: Pick<User, "password" | "email" | "name">) {
     return this.authService.signIn(user);
